@@ -4,3 +4,6 @@ peft
 deepspeed
 mpi4py  # conda install mpi4py mpich -c conda-forge
 sentencepiece
+rouge_chinese
+nltk
+jieba

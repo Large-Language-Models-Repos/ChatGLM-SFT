@@ -24,27 +24,12 @@
         }
     },
     "zero_optimization": {
-        "stage": 2,
-        "offload_param": {
-            "device": "none",
-            "pin_memory": false,
-            "buffer_count": 5,
-            "buffer_size": 1e8,
-            "max_in_cpu": 1e9
-        },
-        "offload_optimizer": {
-            "device": "none"
-        },
-        "allgather_partitions": true,
-        "allgather_bucket_size": 2e8,
-        "overlap_comm": true,
-        "reduce_scatter": true,
-        "contiguous_gradients": true
+        "stage": 1
     },
     "gradient_accumulation_steps": 1,
     "gradient_clipping": 1,
     "steps_per_print": 2000,
-    "train_batch_size": 2,
-    "train_micro_batch_size_per_gpu": 2,
+    "train_batch_size": 8,
+    "train_micro_batch_size_per_gpu": 4,
     "wall_clock_breakdown": false
 }
