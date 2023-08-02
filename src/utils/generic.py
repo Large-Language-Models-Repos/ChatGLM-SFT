@@ -24,11 +24,12 @@ def get_gen_kwargs(inputs: dict, args: argparse.ArgumentParser) -> dict:
     gen_kwargs["top_p"] = args.top_p
     gen_kwargs["do_sample"] = args.do_sample
     gen_kwargs["temperature"] = args.temperature
+    gen_kwargs["max_length"] = args.max_length
     return gen_kwargs
 
 
 def get_eval_metrics(source: List[str], target: List[str]) -> Dict[str, float]:
-    scores = {"rouge-1": [], "rouge-2": [], "rouge-l": [], "bleu@4": []}
+    scores = {"rouge-1": [], "rouge-2": [], "rouge-l": [], "bleu_4": []}
     for s, t in zip(source, target):
         hypothesis = list(jieba.cut(s))
         reference = list(jieba.cut(t))
@@ -37,7 +38,7 @@ def get_eval_metrics(source: List[str], target: List[str]) -> Dict[str, float]:
         for k, v in result.items():
             scores[k].append(v["f"])
         bleu_score = sentence_bleu([list(t)], list(s), smoothing_function=SmoothingFunction().method3)
-        scores["bleu@4"].append(bleu_score)
+        scores["bleu_4"].append(bleu_score)
     for k, v in scores.items():
         scores[k] = float(np.mean(v))
     return scores

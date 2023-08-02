@@ -45,10 +45,15 @@
         "synchronize_checkpoint_boundary": false,
         "profile": false
     },
+    "tensorboard": {
+        "enabled": false,
+        "output_path": "../data/output_dir/logs/",
+        "job_name": "test"
+    },
     "gradient_accumulation_steps": 1,
     "gradient_clipping": 1,
     "steps_per_print": 2000,
-    "train_batch_size": 2,
-    "train_micro_batch_size_per_gpu": 1,
+    "train_batch_size": 4,
+    "train_micro_batch_size_per_gpu": 2,
     "wall_clock_breakdown": false
 }
