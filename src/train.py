@@ -146,6 +146,8 @@ def main():
     parser.add_argument("--lora_target_modules", type=str, default="query_key_value", help="")
     parser.add_argument("--tensorboard_dir", type=str, default="../data/output_dir/logs/", help="")
     parser.add_argument("--tensorboard_project_name", type=str, default="finetuning", help="")
+    # new
+    parser.add_argument("--save_dir", type=str, default="../data/output_dir/models", help="")
     parser = deepspeed.add_config_arguments(parser=parser)
     args = parser.parse_args()
 
@@ -233,6 +235,8 @@ def main():
                 writer.add_scalar("Train/Loss", loss.item(), len(train_dataloader) * epoch + step)
             model.backward(loss)
             model.step()
+
+        model.save_checkpoint(args.save_dir, epoch)
 
         model.eval()
         eval_train_rouge_1, eval_train_rouge_2, eval_train_rouge_l, eval_train_bleu_4 = torch.tensor(0.0).to(
