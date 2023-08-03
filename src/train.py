@@ -130,8 +130,8 @@ def main():
     parser.add_argument("--num_epochs", type=int, default=8, help="")
     parser.add_argument("--train_batch_size_per_gpu", type=int, default=2, help="")
     parser.add_argument("--eval_batch_size_per_gpu", type=int, default=2, help="")
-    parser.add_argument("--max_q_length", type=int, default=100, help="")
-    parser.add_argument("--max_a_length", type=int, default=500, help="")
+    parser.add_argument("--max_q_length", type=int, default=500, help="")
+    parser.add_argument("--max_a_length", type=int, default=100, help="")
     parser.add_argument("--model_name_or_path",
                         type=str,
                         default="/media/E/lichunyu/models/pretrained_models/chatglm2-6b",

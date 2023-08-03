@@ -12,11 +12,7 @@ def gen_chat_data(data: list):
     history = []
     for _, d in enumerate(data):
         q, a = d["q"], d["a"]
-        result.append({
-            "q": q,
-            "a": a,
-            "history": copy(history)
-        })
+        result.append({"q": q.replace("<n>", "\n"), "a": a.replace("<n>", "\n"), "history": copy(history)})
         history.append([q, a])
     return result
 
