@@ -241,7 +241,8 @@ def main():
             model.backward(loss)
             model.step()
 
-        model.save_checkpoint(args.save_dir, f"epoch_{epoch}")
+        if epoch >= 13 and epoch % 3 == 0:
+            model.save_checkpoint(args.save_dir, f"epoch_{epoch}")
 
         model.eval()
         eval_train_rouge_1, eval_train_rouge_2, eval_train_rouge_l, eval_train_bleu_4 = torch.tensor(0.0).to(

@@ -12,9 +12,13 @@
             "console": "internalConsole",
             "justMyCode": false,
             "cwd": "${workspaceFolder}/src",
+            // "args": [
+            //     "--deepspeed_config",
+            //     "./configs/ds_config.json"
+            // ]
             "args": [
-                "--deepspeed_config",
-                "./configs/ds_config.json"
+                ".",
+                "test"
             ]
         }
     ]
