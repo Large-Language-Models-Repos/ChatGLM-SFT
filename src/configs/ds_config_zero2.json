@@ -53,7 +53,7 @@
     "gradient_accumulation_steps": 1,
     "gradient_clipping": 1,
     "steps_per_print": 2000,
-    "train_batch_size": 4,
-    "train_micro_batch_size_per_gpu": 2,
+    "train_batch_size": 16,
+    "train_micro_batch_size_per_gpu": 8,
     "wall_clock_breakdown": false
 }

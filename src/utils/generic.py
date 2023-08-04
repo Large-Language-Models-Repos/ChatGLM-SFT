@@ -29,18 +29,24 @@ def get_gen_kwargs(inputs: dict, args: argparse.ArgumentParser) -> dict:
 
 
 def get_eval_metrics(source: List[str], target: List[str]) -> Dict[str, float]:
-    scores = {"rouge-1": [], "rouge-2": [], "rouge-l": [], "bleu_4": []}
-    for s, t in zip(source, target):
-        hypothesis = list(jieba.cut(s))
-        reference = list(jieba.cut(t))
-        rouge = Rouge()
-        result = rouge.get_scores(' '.join(hypothesis), ' '.join(reference))[0]
-        for k, v in result.items():
-            scores[k].append(v["f"])
-        bleu_score = sentence_bleu([list(t)], list(s), smoothing_function=SmoothingFunction().method3)
-        scores["bleu_4"].append(bleu_score)
-    for k, v in scores.items():
-        scores[k] = float(np.mean(v))
+    try:
+        scores = {"rouge-1": [], "rouge-2": [], "rouge-l": [], "bleu_4": []}
+        for s, t in zip(source, target):
+            hypothesis = list(jieba.cut(s))
+            reference = list(jieba.cut(t))
+            rouge = Rouge()
+            result = rouge.get_scores(' '.join(hypothesis), ' '.join(reference))[0]
+            for k, v in result.items():
+                scores[k].append(v["f"])
+            bleu_score = sentence_bleu([list(t)], list(s), smoothing_function=SmoothingFunction().method3)
+            scores["bleu_4"].append(bleu_score)
+        for k, v in scores.items():
+            scores[k] = float(np.mean(v))
+    except Exception:
+        print("evaluation failed !")
+        print(f"source: {source}")
+        print(f"target: {target}")
+        scores = {"rouge-1": 0.0, "rouge-2": 0.0, "rouge-l": 0.0, "bleu_4": 0.0}
     return scores
 
 

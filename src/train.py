@@ -30,25 +30,26 @@ from utils.generic import get_eval_metrics, get_gen_kwargs
 
 class CausalDataset(Dataset):
 
-    def __init__(
-        self,
-        file_path: str,
-        tokenizer: PreTrainedTokenizerBase,
-        max_q_length=100,
-        max_a_length=50,
-    ) -> None:
+    def __init__(self,
+                 file_path: str,
+                 tokenizer: PreTrainedTokenizerBase,
+                 max_q_length=100,
+                 max_a_length=50,
+                 prefix_prompt="") -> None:
         super().__init__()
         self.data = get_data(file_path=file_path)
         self.tokenizer = tokenizer
         self.max_q_length = max_q_length
         self.max_a_length = max_a_length
         self.max_seq_length = max_q_length + max_a_length + 1
+        self.prefix_prompt = prefix_prompt
 
     def __getitem__(self, index) -> T_co:
         q = self.data[index]["q"]
         a = self.data[index]["a"]
         history = self.data[index]["history"]
         prompt = self.tokenizer.build_prompt(q, history)
+        prompt = self.prefix_prompt + prompt
         q_ids = self.tokenizer.encode(text=prompt, add_special_tokens=True, truncation=True, max_length=self.max_q_length)
         a_ids = self.tokenizer.encode(text=a, add_special_tokens=False, truncation=True, max_length=self.max_a_length)
         context_length = len(q_ids)
@@ -67,24 +68,25 @@ class CausalDataset(Dataset):
 
 class GenerationDataset(Dataset):
 
-    def __init__(
-        self,
-        file_path: str,
-        tokenizer: PreTrainedTokenizerBase,
-        max_q_length=100,
-        max_a_length=50,
-    ) -> None:
+    def __init__(self,
+                 file_path: str,
+                 tokenizer: PreTrainedTokenizerBase,
+                 max_q_length=100,
+                 max_a_length=50,
+                 prefix_prompt="") -> None:
         self.data = get_data(file_path=file_path)
         self.tokenizer = tokenizer
         self.max_q_length = max_q_length
         self.max_a_length = max_a_length
         self.max_seq_length = max_q_length + max_a_length + 1
+        self.prefix_prompt = prefix_prompt
 
     def __getitem__(self, index):
         q = self.data[index]["q"]
         a = self.data[index]["a"]
         history = self.data[index]["history"]
         prompt = self.tokenizer.build_prompt(q, history)
+        prompt = self.prefix_prompt + prompt
         inputs = self.tokenizer(prompt, max_length=self.max_q_length, truncation=True, padding=True)
         labels = self.tokenizer(text_target=a, max_length=self.max_a_length, truncation=True)
         labels["input_ids"] = [i if i != self.tokenizer.pad_token_id else -100 for i in labels["input_ids"]]
@@ -146,8 +148,8 @@ def main():
     parser.add_argument("--lora_target_modules", type=str, default="query_key_value", help="")
     parser.add_argument("--tensorboard_dir", type=str, default="../data/output_dir/logs/", help="")
     parser.add_argument("--tensorboard_project_name", type=str, default="finetuning", help="")
-    # new
     parser.add_argument("--save_dir", type=str, default="../data/output_dir/models", help="")
+    parser.add_argument("--prefix_prompt", type=str, default="假如你是一个制造业的客服", help="")
     parser = deepspeed.add_config_arguments(parser=parser)
     args = parser.parse_args()
 
@@ -181,7 +183,8 @@ def main():
     train_dataset = CausalDataset(file_path=args.train_file_path,
                                   tokenizer=tokenizer,
                                   max_q_length=args.max_q_length,
-                                  max_a_length=args.max_a_length)
+                                  max_a_length=args.max_a_length,
+                                  prefix_prompt=args.prefix_prompt)
     train_sampler = DistributedSampler(train_dataset)
     train_dataloader = DataLoader(train_dataset,
                                   batch_size=args.train_batch_size_per_gpu,
@@ -196,7 +199,8 @@ def main():
     eval_train_dataset = GenerationDataset(file_path=args.train_file_path,
                                            tokenizer=tokenizer,
                                            max_q_length=args.max_q_length,
-                                           max_a_length=args.max_a_length)
+                                           max_a_length=args.max_a_length,
+                                           prefix_prompt=args.prefix_prompt)
     eval_train_sampler = DistributedSampler(eval_train_dataset, shuffle=False)
     eval_train_dataloader = DataLoader(eval_train_dataset,
                                        batch_size=args.eval_batch_size_per_gpu,
@@ -211,7 +215,8 @@ def main():
     eval_dataset = GenerationDataset(file_path=args.eval_file_path,
                                      tokenizer=tokenizer,
                                      max_q_length=args.max_q_length,
-                                     max_a_length=args.max_a_length)
+                                     max_a_length=args.max_a_length,
+                                     prefix_prompt=args.prefix_prompt)
     eval_sampler = DistributedSampler(eval_dataset, shuffle=False)
     eval_dataloader = DataLoader(eval_dataset,
                                  batch_size=args.eval_batch_size_per_gpu,
