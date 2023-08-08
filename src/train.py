@@ -149,7 +149,7 @@ def main():
     parser.add_argument("--tensorboard_dir", type=str, default="../data/output_dir/logs/", help="")
     parser.add_argument("--tensorboard_project_name", type=str, default="finetuning", help="")
     parser.add_argument("--save_dir", type=str, default="../data/output_dir/models", help="")
-    parser.add_argument("--prefix_prompt", type=str, default="假如你是一个制造业的客服", help="")
+    parser.add_argument("--prefix_prompt", type=str, default="假如你是一个制造业的客服。", help="")
     parser = deepspeed.add_config_arguments(parser=parser)
     args = parser.parse_args()
 
